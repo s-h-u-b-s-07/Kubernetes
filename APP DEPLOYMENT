@@ -1,0 +1,151 @@
+
+
+**************************************************Set Up Kubernetes On Amazon EKS*********************************************************
+
+1] Set up CLI (Command Line Interface)
+
+Version 1
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+
+unzip awscliv2.zip
+
+sudo ./aws/install
+
+################################################################
+
+Version 2
+
+curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip"
+ 
+sudo apt-get install zip 
+
+unzip awscliv2.zip
+
+sudo ./aws/install
+
+****************************************************************************************
+
+2]  Set Up Kubectl
+
+curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.21.2/2021-07-05/bin/linux/amd64/kubectl
+
+chmod +x ./kubectl
+
+mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+
+kubectl version --short --client
+
+****************************************************************************************
+
+3] Set Up eksctl
+
+curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+
+sudo mv /tmp/eksctl /usr/local/bin
+
+eksctl version
+
+****************************************************************************************
+                     CREATE A EKS CLUSTER USING EKSCTL
+
+eksctl create cluster \
+--name eks-cluster \
+--version 1.21 \
+--region us-east-1 \
+--nodegroup-name eks-workers \
+--node-type t2.medium \
+--nodes 2 \
+--nodes-min 2 \
+--nodes-max 2 
+
+delete cluster
+
+eksctl delete cluster --name eks-cluster
+
+****************************************************************************************
+
+                      CLONE THE NODEJS APPLICATION
+****************************************************************************************
+                       CREATED NAME SPACE (Dev)
+
+kubectl create namespace Dev ----- creating name space
+kubectl get ns ------list the namespaces
+
+************************************************************************************************************
+  CREATED MYDEPLOY.YAML FILE (DEPLOYMENTS IN KUBERNETES) + CREATED SERVICE FILE INCLUDE IN SAME FILE
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mydeploy
+  namespace: dev
+  labels:
+    app: node
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: node
+  template:
+    metadata:
+      labels:
+        app: node
+    spec:
+      containers:
+      - name: node
+        image: shub07/hello_world_app
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 81
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node
+  namespace: dev
+spec:
+  type: NodePort
+  selector:
+    app: node
+  ports:
+    - port: 81
+
+
+
+kubctl creat -f mydeploy.yaml     (this will automatically creat pods, service (nodeport, clusterip, loadbalancer, externalname))
+kubectl get pods
+kubectl get service -n dev
+
+*********************************************************************************************************************************************
+                                              CREATED INGRESS FILE
+
+
+kind: Ingress
+metadata:
+  name: mynode-ingress
+  namespace: dev
+spec:
+  rules:
+  - host: node.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix                                      (all paths)
+        backend:
+          service:
+            name: node
+            port:
+              number: 80
+
+
+
+kubectl apply -f ingress.yaml --validate=false  ------(error free create ingress, some errors get ignored)
+kubectl describe service nod -n dev    --------(get all indo regarding node)
+kubectl get pod -o wide -n dev    ----------(get pods with info)
+kubectl get ingress -n dev       ------(find ingress)
+
+
+
+
