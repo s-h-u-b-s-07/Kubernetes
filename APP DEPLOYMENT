@@ -131,7 +131,7 @@ kubectl get pods -n dev
 *********************************************************************************************************************************************
                                               CREATED INGRESS FILE
 
-
+apiVersion: networking.k8s.io/v1beta1
 kind: Ingress
 metadata:
   name: mynode-ingress
