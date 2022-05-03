@@ -68,6 +68,11 @@ eksctl delete cluster --name eks-cluster
 
 ****************************************************************************************
 
+For nodejs download 
+
+
+https://github.com/nodesource/distributions/blob/master/README.md
+
                       CLONE THE NODEJS APPLICATION
 ****************************************************************************************
                        CREATED NAME SPACE (Dev)
