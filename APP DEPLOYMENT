@@ -123,8 +123,10 @@ spec:
 
 
 kubctl creat -f mydeploy.yaml     (this will automatically creat pods, service (nodeport, clusterip, loadbalancer, externalname))
-kubectl get pods
+
 kubectl get service -n dev
+
+kubectl get pods -n dev
 
 *********************************************************************************************************************************************
                                               CREATED INGRESS FILE
