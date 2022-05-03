@@ -24,6 +24,9 @@ unzip awscliv2.zip
 
 sudo ./aws/install
 
+
+AWS CONFIGURE [secrate key access key IAM user]
+
 ****************************************************************************************
 
 2]  Set Up Kubectl
